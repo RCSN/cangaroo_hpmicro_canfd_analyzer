@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>cangaroo</string>
+  </property>
+  <property name="documentMode">
+   <bool>false</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>3</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="mainTabs">
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_WorkspaceNew"/>
+    <addaction name="separator"/>
+    <addaction name="action_WorkspaceOpen"/>
+    <addaction name="action_WorkspaceSave"/>
+    <addaction name="action_WorkspaceSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="action_Quit"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>&amp;Window</string>
+    </property>
+    <widget class="QMenu" name="menu_New">
+     <property name="title">
+      <string>&amp;New</string>
+     </property>
+     <addaction name="action_Trace_View"/>
+     <addaction name="actionLog_View"/>
+     <addaction name="actionGraph_View"/>
+     <addaction name="actionCan_Status_View"/>
+     <addaction name="actionGraph_View_2"/>
+     <addaction name="actionTransmit_View"/>
+    </widget>
+    <addaction name="menu_New"/>
+   </widget>
+   <widget class="QMenu" name="menuMeasurement">
+    <property name="title">
+     <string>&amp;Measurement</string>
+    </property>
+    <addaction name="actionStart_Measurement"/>
+    <addaction name="actionStop_Measurement"/>
+    <addaction name="separator"/>
+    <addaction name="actionSetup"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menu_Trace">
+    <property name="title">
+     <string>&amp;Trace</string>
+    </property>
+    <addaction name="action_TraceClear"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Trace_to_file"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuMeasurement"/>
+   <addaction name="menu_Trace"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="action_Quit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F4</string>
+   </property>
+  </action>
+  <action name="action_Trace_View">
+   <property name="text">
+    <string>&amp;Trace View</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+T</string>
+   </property>
+  </action>
+  <action name="actionLog_View">
+   <property name="text">
+    <string>&amp;Log View</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+L</string>
+   </property>
+  </action>
+  <action name="actionSetup">
+   <property name="text">
+    <string>&amp;Setup...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
+   </property>
+  </action>
+  <action name="actionStart_Measurement">
+   <property name="text">
+    <string>Star&amp;t Measurement</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionStop_Measurement">
+   <property name="text">
+    <string>Sto&amp;p Measurement</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F5</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionSave_Trace_to_file">
+   <property name="text">
+    <string>&amp;Save Trace to file...</string>
+   </property>
+  </action>
+  <action name="actionGraph_View">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Graph View</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+G</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="action_WorkspaceNew">
+   <property name="text">
+    <string>&amp;New Workspace...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="action_WorkspaceSave">
+   <property name="text">
+    <string>&amp;Save Workspace</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_WorkspaceSaveAs">
+   <property name="text">
+    <string>Save Workspace &amp;As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="action_WorkspaceOpen">
+   <property name="text">
+    <string>&amp;Open Workspace...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_TraceClear">
+   <property name="text">
+    <string>&amp;Clear</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
+  <action name="actionCan_Status_View">
+   <property name="text">
+    <string>Can &amp;Status View</string>
+   </property>
+  </action>
+  <action name="actionGraph_View_2">
+   <property name="text">
+    <string>Graph View</string>
+   </property>
+  </action>
+  <action name="actionTransmit_View">
+   <property name="text">
+    <string>Transmit View</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>action_Quit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
