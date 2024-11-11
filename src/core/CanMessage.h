@@ -45,7 +45,7 @@ public:
 	void setExtended(const bool isExtended);
 
 	bool isRTR() const;
-	void setRTR(const bool isRTR);
+    void setRTR(const bool isRTR);
 
     bool isFD() const;
     void setFD(const bool isFD);
@@ -88,11 +88,6 @@ public:
     QString getDataHexString() const;
 
 private:
-	uint32_t _raw_id;
-    uint8_t _dlc;
-    bool _isFD;
-    bool _isBRS;
-    CanInterfaceId _interface;
     union {
         uint8_t _u8[8*8];
         uint16_t _u16[4*8];
@@ -100,5 +95,12 @@ private:
         uint64_t _u64[8];
 	};
     struct timeval _timestamp;
+    uint32_t _raw_id;
+    uint8_t _dlc;
+    bool _isFD;
+    bool _isBRS;
+    bool _isExd;
+    bool _isRTR;
+    CanInterfaceId _interface;
 
 };

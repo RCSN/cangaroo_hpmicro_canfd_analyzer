@@ -102,7 +102,7 @@ bool SLCANDriver::update() {
             createOrUpdateInterface(interface_cnt, info.portName(), info.description(),true);
             interface_cnt++;
         }
-        else if(info.vendorIdentifier() == 0x0416 && info.productIdentifier() == 0x50A1)
+        else if(info.vendorIdentifier() == 0x34B7 && info.productIdentifier() == 0xFFFF)
         {
             hpmicro_can = 1;
             len = sprintf(data, "r_can%d", hpm_com_count);
