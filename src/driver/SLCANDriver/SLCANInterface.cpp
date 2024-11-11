@@ -535,6 +535,7 @@ bool SLCANInterface::readMessage(QList<CanMessage> &msglist, unsigned int timeou
     //////////////////////////
 
     bool ret = false;
+    int count =0;
     _rxbuf_mutex.lock();
     while(_rxbuf_tail != _rxbuf_head)
     {
@@ -549,6 +550,8 @@ bool SLCANInterface::readMessage(QList<CanMessage> &msglist, unsigned int timeou
                 CanMessage msg;
                 ret = parseMessage(msg);
                 msglist.append(msg);
+                msglist.replace(count, msg);
+                count++;
                 _rx_linbuf_ctr = 0;
             }
         }
@@ -601,39 +604,51 @@ bool SLCANInterface::parseMessage(CanMessage &msg)
 
         // Transmit data frame command
         case 'T':
-            msg.setExtended(1);
+            msg.setFD(false);
+            msg.setExtended(true);
             break;
         case 't':
-            msg.setExtended(0);
+            msg.setFD(false);
+            msg.setExtended(false);
             break;
 
         // Transmit remote frame command
         case 'r':
-            msg.setExtended(0);
-            msg.setRTR(1);
+            msg.setFD(false);
+            msg.setExtended(false);
+            msg.setRTR(true);
             break;
         case 'R':
-            msg.setExtended(1);
-            msg.setRTR(1);
+            msg.setFD(false);
+            msg.setExtended(true);
+            msg.setRTR(true);
             break;
 
         // CANFD transmit - no BRS
         case 'd':
-            msg.setExtended(0);
+            msg.setFD(1);
+            msg.setExtended(false);
+            msg.setBRS(false);
             msg_is_fd = true;
             break;
         case 'D':
-            msg.setExtended(1);
+            msg.setFD(true);
+            msg.setExtended(true);
+            msg.setBRS(false);
             msg_is_fd = true;
             break;
 
         // CANFD transmit - with BRS
         case 'b':
-            msg.setExtended(0);
+            msg.setFD(true);
+            msg.setExtended(false);
+            msg.setBRS(true);
             msg_is_fd = true;
             break;
         case 'B':
-            msg.setExtended(1);
+            msg.setFD(true);
+            msg.setExtended(true);
+            msg.setBRS(true);
             msg_is_fd = true;
             break;
 

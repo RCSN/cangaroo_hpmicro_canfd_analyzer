@@ -55,15 +55,21 @@ QVariant BaseTraceViewModel::headerData(int section, Qt::Orientation orientation
                 case column_canid:
                     return QString("CAN ID");
                 case column_sender:
-                    return QString("Sender");
+                    return QString("DB_Sender");
                 case column_name:
-                    return QString("Name");
+                    return QString("DB_Name");
                 case column_dlc:
                     return QString("DLC");
+                case column_frame_type:
+                    return QString("Frame Type");
+                case column_frame_format:
+                    return QString("Frame Format");
+                case column_can_type:
+                    return QString("CAN Type");
                 case column_data:
                     return QString("Data");
                 case column_comment:
-                    return QString("Comment");
+                    return QString("DB_Comment");
             }
         }
 
@@ -181,10 +187,27 @@ QVariant BaseTraceViewModel::data_DisplayRole_Message(const QModelIndex &index, 
             return currentMsg.getIdString();
 
         case column_name:
-            return (dbmsg) ? dbmsg->getName() : "";
+            return (dbmsg) ? dbmsg->getName() : "NULL";
 
         case column_sender:
-            return (dbmsg) ? dbmsg->getSender()->name() : "";
+            return (dbmsg) ? dbmsg->getSender()->name() : "NULL";
+        
+        case column_can_type:
+        if (currentMsg.isFD() == true) {
+            if (currentMsg.isBRS() == true) {
+                return "CANFD_BRS";
+            } else {
+                return "CANFD";
+            }
+        } else {
+            return "CAN";
+        }
+
+        case column_frame_type:
+            return (currentMsg.isExtended()) ? "Extended" : "Standard";
+
+        case column_frame_format:
+            return (currentMsg.isRTR()) ? "Remote" : "Data";
 
         case column_dlc:
             return currentMsg.getLength();
@@ -193,7 +216,7 @@ QVariant BaseTraceViewModel::data_DisplayRole_Message(const QModelIndex &index, 
             return currentMsg.getDataHexString();
 
         case column_comment:
-            return (dbmsg) ? dbmsg->getComment() : "";
+            return (dbmsg) ? dbmsg->getComment() : "NULL";
 
         default:
             return QVariant();

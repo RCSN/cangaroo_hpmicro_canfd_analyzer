@@ -23,7 +23,7 @@
 
 #include "CanMessage.h"
 #include <core/portable_endian.h>
-
+#include <QDebug>
 enum {
 	id_flag_extended = 0x80000000,
 	id_flag_rtr      = 0x40000000,
@@ -33,18 +33,23 @@ enum {
 };
 
 CanMessage::CanMessage()
-  : _raw_id(0), _dlc(0), _isFD(false), _interface(0), _u8()
 {
     _timestamp.tv_sec = 0;
     _timestamp.tv_usec = 0;
-
+    _isBRS = false;
+    _isFD = false;
+    _dlc = 0;
+    _raw_id= 0;
+    _interface = 0;
+    _isExd = false;
+    _isRTR = false;
 }
 
 CanMessage::CanMessage(uint32_t can_id)
-  : _dlc(0), _interface(0), _u8()
 {
     _timestamp.tv_sec = 0;
     _timestamp.tv_usec = 0;
+    _isBRS = 0;
     setId(can_id);
 }
 
@@ -57,7 +62,10 @@ void CanMessage::cloneFrom(const CanMessage &msg)
 {
     _raw_id = msg._raw_id;
     _dlc = msg._dlc;
-
+    _isFD = msg.isFD();
+    _isBRS = msg.isBRS();
+    _isExd = msg.isExtended();
+    _isRTR = msg.isRTR();
     // Copy data
     for(int i=0; i<64; i++)
     {
@@ -78,43 +86,27 @@ void CanMessage::setRawId(const uint32_t raw_id) {
 }
 
 uint32_t CanMessage::getId() const {
-	if (isExtended()) {
-		return _raw_id & id_mask_extended;
-	} else {
-		return _raw_id & id_mask_standard;
-	}
+    return _raw_id;
 }
 
 void CanMessage::setId(const uint32_t id) {
-    _raw_id &= ~ id_mask_extended;
     _raw_id = id;
-    if (id>0x7FF) {
-		setExtended(true);
-	}
 }
 
 bool CanMessage::isExtended() const {
-	return (_raw_id & id_flag_extended) != 0;
+    return _isExd;
 }
 
 void CanMessage::setExtended(const bool isExtended) {
-	if (isExtended) {
-		_raw_id |= id_flag_extended;
-	} else {
-		_raw_id &= ~id_flag_extended;
-	}
+    _isExd = isExtended;
 }
 
 bool CanMessage::isRTR() const {
-    return (_raw_id & id_flag_rtr) != 0;
+    return _isRTR;
 }
 
 void CanMessage::setRTR(const bool isRTR) {
-    if (isRTR) {
-        _raw_id |= id_flag_rtr;
-    } else {
-        _raw_id &= ~id_flag_rtr;
-    }
+    _isRTR = isRTR;
 }
 
 bool CanMessage::isFD() const {

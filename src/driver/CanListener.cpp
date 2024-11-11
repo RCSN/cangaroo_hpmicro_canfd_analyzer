@@ -70,10 +70,11 @@ void CanListener::run()
     _intf.open();
 
     _openComplete = true;
+    CanMessage msg;
     while (_shouldBeRunning) {
         if (_intf.readMessage(rxMessages, 1000)) {
-            for(CanMessage msg: rxMessages)
-            {
+            for (int i = 0; i < rxMessages.size(); i++) {
+                msg = rxMessages.at(i);
                 trace->enqueueMessage(msg, false);
             }
             rxMessages.clear();

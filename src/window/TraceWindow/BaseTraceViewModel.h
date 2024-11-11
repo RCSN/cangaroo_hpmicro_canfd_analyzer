@@ -41,9 +41,12 @@ public:
         column_canid,
         column_sender,
         column_name,
+        column_comment,
+        column_frame_type,
+        column_frame_format,
+        column_can_type,
         column_dlc,
         column_data,
-        column_comment,
         column_count
     };
 

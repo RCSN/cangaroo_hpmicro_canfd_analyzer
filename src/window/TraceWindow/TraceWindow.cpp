@@ -70,13 +70,19 @@ TraceWindow::TraceWindow(QWidget *parent, Backend &backend) :
 
     ui->tree->setUniformRowHeights(true);
     ui->tree->setColumnWidth(0, 110);//Timestamp
-    ui->tree->setColumnWidth(1, 70);//Port
+    ui->tree->setColumnWidth(1, 120);//Port
     ui->tree->setColumnWidth(2, 70);//Rx/Tx
     ui->tree->setColumnWidth(3, 110);//CAN_ID
-    ui->tree->setColumnWidth(4, 70);//Sender
-    ui->tree->setColumnWidth(5, 60);//Name
-    ui->tree->setColumnWidth(6, 50);//DLC
-    ui->tree->setColumnWidth(7, 1000);//Data
+    ui->tree->setColumnWidth(4, 80);//DB_Sender
+    ui->tree->setColumnWidth(5, 70);//DB_Name
+    ui->tree->setColumnWidth(6, 80);//DB_comment
+
+    ui->tree->setColumnWidth(7, 90);//Frame Type
+    ui->tree->setColumnWidth(8, 90);//Frame Format
+    ui->tree->setColumnWidth(9, 80);//CAN Type
+
+    ui->tree->setColumnWidth(10, 50);//DLC
+    ui->tree->setColumnWidth(11, 1000);//Data
     ui->tree->sortByColumn(BaseTraceViewModel::column_canid, Qt::AscendingOrder);
 
     ui->cbTimestampMode->addItem("Absolute", 0);
