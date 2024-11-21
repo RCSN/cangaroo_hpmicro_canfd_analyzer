@@ -43,6 +43,7 @@
 #if defined(__linux__)
 #include <driver/SocketCanDriver/SocketCanDriver.h>
 #else
+#include <driver/PeakCanDriver/PeakCanDriver.h>
 #include <driver/CandleApiDriver/CandleApiDriver.h>
 #endif
 
@@ -77,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #if defined(__linux__)
     Backend::instance().addCanDriver(*(new SocketCanDriver(Backend::instance())));
 #else
+    Backend::instance().addCanDriver(*(new PeakCanDriver(Backend::instance())));
     Backend::instance().addCanDriver(*(new CandleApiDriver(Backend::instance())));
 #endif
     Backend::instance().addCanDriver(*(new SLCANDriver(Backend::instance())));
