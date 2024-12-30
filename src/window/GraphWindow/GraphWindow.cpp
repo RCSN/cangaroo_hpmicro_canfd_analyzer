@@ -24,23 +24,21 @@
 
 #include <QDomDocument>
 
-#include <core/Backend.h>
 #include <QtCharts/QChartView>
+#include <core/Backend.h>
 
 #define NUM_GRAPH_POINTS 20
 
-GraphWindow::GraphWindow(QWidget *parent, Backend &backend) :
-    ConfigurableWidget(parent),
-    ui(new Ui::GraphWindow),
-    _backend(backend)
+GraphWindow::GraphWindow(QWidget* parent, Backend& backend)
+    : ConfigurableWidget(parent)
+    , ui(new Ui::GraphWindow)
+    , _backend(backend)
 {
     ui->setupUi(this);
 
-
     data_series = new QLineSeries();
 
-    for(uint32_t i=0; i<NUM_GRAPH_POINTS; i++)
-    {
+    for (uint32_t i = 0; i < NUM_GRAPH_POINTS; i++) {
         data_series->append(i, i);
     }
 
@@ -50,34 +48,29 @@ GraphWindow::GraphWindow(QWidget *parent, Backend &backend) :
     data_chart->createDefaultAxes();
     data_chart->setTitle("Simple line chart example");
 
-
     // Have a box pop up that allows the user to select a signal from the loaded DBC to graph
     // On OK, add that CanDbMessage to a list.
     // Either sample the values regularly with a timer or somehow emit a signal when the message
     // is received that we catch here...
 
-    //backend.findDbMessage()
+    // backend.findDbMessage()
 
-//    CanDbMessage *result = 0;
+    //    CanDbMessage *result = 0;
 
-//    foreach (MeasurementNetwork *network, _networks) {
-//        foreach (pCanDb db, network->_canDbs) {
-//            result = db->getMessageById(msg.getRawId());
-//            if (result != 0) {
-//                return result;
-//            }
-//        }
-//    }
-//    return result;
-
-
+    //    foreach (MeasurementNetwork *network, _networks) {
+    //        foreach (pCanDb db, network->_canDbs) {
+    //            result = db->getMessageById(msg.getRawId());
+    //            if (result != 0) {
+    //                return result;
+    //            }
+    //        }
+    //    }
+    //    return result;
 
     ui->chartView->setChart(data_chart);
     ui->chartView->setRenderHint(QPainter::Antialiasing);
 
-//    connect(ui->buttonTest, SIGNAL(released()), this, SLOT(testAddData()));
-
-
+    //    connect(ui->buttonTest, SIGNAL(released()), this, SLOT(testAddData()));
 }
 
 void GraphWindow::testAddData(qreal new_yval)
@@ -89,24 +82,23 @@ void GraphWindow::testAddData(qreal new_yval)
     qreal ymax = ymin;
 
     // Copy all points but first one
-    for(uint32_t i=1; i < data_series->count(); i++)
-    {
-        serbuf->append(data_series->at(i).x()-1, data_series->at(i).y());
+    for (uint32_t i = 1; i < static_cast<uint32_t>(data_series->count()); i++) {
+        serbuf->append(data_series->at(i).x() - 1, data_series->at(i).y());
 
         // Autoranging
-        if(data_series->at(i).y() < ymin)
+        if (data_series->at(i).y() < ymin)
             ymin = data_series->at(i).y();
-        if(data_series->at(i).y() > ymax)
+        if (data_series->at(i).y() > ymax)
             ymax = data_series->at(i).y();
     }
 
     // Apply Y margin and set range
     ymin -= 1;
     ymax += 1;
-    data_chart->axisY()->setRange(ymin, ymax);
+    data_chart->axes(Qt::Vertical).first()->setRange(ymin, ymax);
 
     // Add new point in
-    serbuf->append(serbuf->points().at(serbuf->count()-1).x() + 1, new_yval);
+    serbuf->append(serbuf->points().at(serbuf->count() - 1).x() + 1, new_yval);
     testcount++;
 
     // Replace data
@@ -122,15 +114,19 @@ GraphWindow::~GraphWindow()
     delete data_series;
 }
 
-bool GraphWindow::saveXML(Backend &backend, QDomDocument &xml, QDomElement &root)
+bool GraphWindow::saveXML(Backend& backend, QDomDocument& xml, QDomElement& root)
 {
-    if (!ConfigurableWidget::saveXML(backend, xml, root)) { return false; }
+    if (!ConfigurableWidget::saveXML(backend, xml, root)) {
+        return false;
+    }
     root.setAttribute("type", "GraphWindow");
     return true;
 }
 
-bool GraphWindow::loadXML(Backend &backend, QDomElement &el)
+bool GraphWindow::loadXML(Backend& backend, QDomElement& el)
 {
-    if (!ConfigurableWidget::loadXML(backend, el)) { return false; }
+    if (!ConfigurableWidget::loadXML(backend, el)) {
+        return false;
+    }
     return true;
 }
