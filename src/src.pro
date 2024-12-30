@@ -48,3 +48,25 @@ include($$PWD/driver/CANBlastDriver/CANBlastDriver.pri)
 include($$PWD/driver/SLCANDriver/SLCANDriver.pri)
 
 win32:include($$PWD/driver/CandleApiDriver/CandleApiDriver.pri)
+
+unix {
+    target.path = $${PREFIX}/bin
+    INSTALLS += target
+
+    DESKTOP.files = $$PWD/../cangaroo.desktop
+    DESKTOP.path = $${PREFIX}/share/applications
+    INSTALLS += DESKTOP
+
+    ICONS.files = $$PWD/assets/cangaroo.svg \
+                $$PWD/assets/mdibg.svg
+    ICONS.path = $${PREFIX}/share/pixmaps
+    INSTALLS += ICONS
+
+    SCRIPT_PATH = $$PWD/scripts/setup_vcan.sh
+    script.files = $$PWD/scripts/cangaroo-setup-vcan
+    script.path = $${PREFIX}/bin
+    script.extra = mv $${SCRIPT_PATH} $${script.files} && chmod +x $${script.files} && mv $${script.files} $(INSTALL_ROOT)$${script.path}
+    INSTALLS += script
+
+    isEmpty(PREFIX):PREFIX=/usr
+}

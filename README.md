@@ -27,7 +27,7 @@ further development by Ethan Zonca <e@ethanzonca.com>
 * build with:
   * qmake -qt=qt5
   * make
-  * make install
+  * make install INSTALL_ROOT=/usr
 
 ## Building on Windows
 * Qt Creator (Community Version is okay) brings everything you need
