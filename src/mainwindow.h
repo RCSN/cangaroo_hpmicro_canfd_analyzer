@@ -60,6 +60,7 @@ public slots:
     void addRawTxWidget(QMainWindow *parent=0);
     void addLogWidget(QMainWindow *parent=0);
     void addStatusWidget(QMainWindow *parent=0);
+    void addCanCfgWidget(QMainWindow *parent = nullptr);
 
     bool showSetupDialog();
     void showAboutDialog();

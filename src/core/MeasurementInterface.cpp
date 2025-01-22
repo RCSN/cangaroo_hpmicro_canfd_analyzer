@@ -213,3 +213,4 @@ void MeasurementInterface::setAutoRestartMs(int autoRestartMs)
 {
     _autoRestartMs = autoRestartMs;
 }
+

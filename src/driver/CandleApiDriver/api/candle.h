@@ -56,6 +56,10 @@ typedef enum {
     CANDLE_MODE_TRIPLE_SAMPLE = 0x04,
     CANDLE_MODE_ONE_SHOT      = 0x08,
     CANDLE_MODE_HW_TIMESTAMP  = 0x10,
+    CANDLE_MODE_IDENTIFY      = 0x20,
+    CANDLE_MODE_USER_ID       = 0x40,
+    CANDLE_MODE_PAD_PKTS_TO_MAX_PKT_SIZE = 0x80,
+    CANDLE_MODE_FD            = 0x100,
 } candle_mode_t;
 
 typedef enum {
@@ -160,6 +164,9 @@ uint8_t __stdcall DLL *candle_frame_data(candle_frame_t *frame);
 uint32_t __stdcall DLL candle_frame_timestamp_us(candle_frame_t *frame);
 
 candle_err_t __stdcall DLL candle_dev_last_error(candle_handle hdev);
+
+bool __stdcall DLL candle_channel_get_can_resister_enable_state(candle_handle hdev, uint8_t ch, uint8_t *enable);
+bool __stdcall DLL candle_channel_set_can_resister_enable_state(candle_handle hdev, uint8_t ch, uint8_t *enable);
 
 #ifdef __cplusplus
 }

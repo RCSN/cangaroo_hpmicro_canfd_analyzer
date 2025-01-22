@@ -100,6 +100,9 @@ public:
     virtual int getNumTxErrors();
     virtual int getNumTxDropped();
 
+    virtual bool get_enable_terminal_res(void);
+    virtual void set_enable_terminal_res(bool enable);
+
     int getIfIndex();
 
 private:
@@ -113,6 +116,7 @@ private:
     bool _isOpen;
     QSerialPort* _serport;
     QStringList _msg_queue;
+    QStringList _hpm_msg_queue;
     QMutex _serport_mutex;
     QString _name;
     QString _description;

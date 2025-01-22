@@ -31,6 +31,7 @@ class CanMessage;
 class MeasurementInterface;
 
 class CanInterface: public QObject  {
+    Q_OBJECT
 public:
     enum {
         state_ok,
@@ -47,7 +48,8 @@ public:
         capability_triple_sampling = 0x04,
         capability_one_shot        = 0x08,
         capability_auto_restart    = 0x10,
-        capability_config_os       = 0x20
+        capability_config_os       = 0x20,
+        capability_enable_terminal_res = 0x40
     };
 
 public:
@@ -81,11 +83,15 @@ public:
     virtual int getNumTxErrors() = 0;
     virtual int getNumRxOverruns() = 0;
     virtual int getNumTxDropped() = 0;
-
+    virtual bool get_enable_terminal_res(void);
+    virtual void set_enable_terminal_res(bool enable);
     QString getStateText();
 
     CanInterfaceId getId() const;
     void setId(CanInterfaceId id);
+
+signals:
+    void _hpm_request_msg(QByteArray msg);
 
 private:
     CanInterfaceId _id;

@@ -587,3 +587,15 @@ uint32_t __stdcall DLL candle_frame_timestamp_us(candle_frame_t *frame)
 {
     return frame->timestamp_us;
 }
+
+bool __stdcall DLL candle_channel_get_can_resister_enable_state(candle_handle hdev, uint8_t ch, uint8_t *enable)
+{
+    candle_device_t *dev = (candle_device_t*)hdev;
+    candle_ctrl_get_can_resister_enable_state(dev, ch, enable);
+}
+
+bool __stdcall DLL candle_channel_set_can_resister_enable_state(candle_handle hdev, uint8_t ch, uint8_t *enable)
+{
+    candle_device_t *dev = (candle_device_t*)hdev;
+    return candle_ctrl_set_can_resister_enable_state(dev, ch, enable);
+}

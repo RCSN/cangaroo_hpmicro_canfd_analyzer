@@ -36,7 +36,7 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QThread>
-
+#include <QRegularExpression>
 
 SLCANInterface::SLCANInterface(SLCANDriver *driver, int index, QString name, QString description, bool fd_support)
   : CanInterface((CanDriver *)driver),
@@ -154,6 +154,15 @@ unsigned SLCANInterface::getBitrate()
 
 uint32_t SLCANInterface::getCapabilities()
 {
+    char data[256];
+    int len;
+    QString desc = getDescription();
+    bool ok = false;
+    uint32_t num = 0;
+    QByteArray readData;
+    bool old_is_close = false;
+    bool old_serial_is_null = false;
+
     uint32_t retval =
         CanInterface::capability_config_os |
         CanInterface::capability_listen_only |
@@ -166,7 +175,6 @@ uint32_t SLCANInterface::getCapabilities()
     if (supportsTripleSampling()) {
         retval |= CanInterface::capability_triple_sampling;
     }
-
     return retval;
 }
 
@@ -217,13 +225,63 @@ int SLCANInterface::getIfIndex() {
     return _idx;
 }
 
+bool SLCANInterface::get_enable_terminal_res()
+{
+    char data[256];
+    int len;
+    QByteArray readData;
+    if (_serport == nullptr) {
+        return false;
+    }
+    _serport_mutex.lock();
+    len = sprintf(data, "hpm_cfg_g_120r"); 
+   _hpm_msg_queue.append(QString(data));
+    _serport_mutex.unlock();
+    return false;
+}
+
+void SLCANInterface::set_enable_terminal_res(bool enable)
+{
+    char data[256];
+    int len;
+    if (_serport == nullptr) {
+        return;
+    }
+    _serport_mutex.lock();
+    if (enable== true) {
+        len = sprintf(data, "hpm_cfg_s_120r_1");
+    } else {
+        len = sprintf(data, "hpm_cfg_s_120r_0");
+    }
+    _hpm_msg_queue.append(QString(data));
+    _serport_mutex.unlock();
+}
+
 void SLCANInterface::open()
 {
-    if(_serport != NULL)
+    QString desc = getDescription();
+    bool ok = false;
+    int len;
+    uint32_t num = 0;
+    QByteArray readData;
+    char data[256];
+    QRegularExpression rx("\\d+\\.?\\d*"); // Matches an integer or a decimal
+    QRegularExpressionMatchIterator i = rx.globalMatch(desc);
+    if(_serport != nullptr)
     {
         delete _serport;
     }
-
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
+        QString numberStr = match.captured(0);
+        num = numberStr.toUInt(&ok);
+        if (ok) {
+            qDebug() << "slcan number:" << num;
+        }
+    }
+    if (ok == false) {
+        return;
+    }
     _serport = new QSerialPort();
 
     _serport_mutex.lock();
@@ -244,6 +302,19 @@ void SLCANInterface::open()
         return;
     }
 
+    _serport->flush();
+    _serport->clear();
+
+    len = sprintf(data, "r_can%d", num);
+    _serport->write(data, len);
+    _serport->flush();
+    _serport->waitForBytesWritten(300);
+    _serport->waitForReadyRead(150);
+    if(_serport->bytesAvailable()) {
+        readData.clear();
+        readData = _serport->readAll();
+        qDebug() << "open " << _serport->portName() << readData;
+    }
     _serport->flush();
     _serport->clear();
 
@@ -331,10 +402,11 @@ void SLCANInterface::open()
     // Open the port
     _serport->write("O\r", 3);
     _serport->flush();
+    _serport->waitForBytesWritten(150);
 
     _isOpen = true;
 
-    // Release port mutex
+     //Release port mutex
     _serport_mutex.unlock();
 }
 
@@ -504,9 +576,26 @@ bool SLCANInterface::readMessage(QList<CanMessage> &msglist, unsigned int timeou
         _serport->waitForBytesWritten(300);
         _serport_mutex.unlock();
     }
-
+    if (!_hpm_msg_queue.isEmpty()) {
+        QString tmp = _hpm_msg_queue.front();
+        _hpm_msg_queue.pop_front();
+        _serport_mutex.lock();
+        // Write string to serial device
+        _serport->write(tmp.toStdString().c_str(), tmp.length());
+        _serport->flush();
+        _serport->waitForBytesWritten(300);
+        _serport_mutex.unlock();
+        QThread().msleep(100);
+       _serport->waitForReadyRead(1);
+       if(_serport->bytesAvailable()) {
+           QByteArray readdata = _serport->readAll();
+            _rxbuf_mutex.lock();
+            emit _hpm_request_msg(readdata);
+            _rxbuf_mutex.unlock();
+       }
+    }
     // RX doesn't work on windows unless we call this for some reason
-    _serport->waitForReadyRead(1);
+
     if(_serport->bytesAvailable())
     {
         // This is called when readyRead() is emitted

@@ -77,11 +77,19 @@ void CANBlasterInterface::setName(QString name) {
     _name = name;
 }
 
+QString CANBlasterInterface::getDescription() const {
+    return  _description ;
+}
+
+void CANBlasterInterface::setDescription(QString description) {
+    _description = description;
+}
+
 QList<CanTiming> CANBlasterInterface::getAvailableBitrates()
 {
     QList<CanTiming> retval;
-    QList<unsigned> bitrates({10000, 20000, 50000, 100000, 125000, 250000, 500000, 1000000});
-    QList<unsigned> bitrates_fd({2000000, 5000000});
+    QList<unsigned> bitrates({10000, 20000, 50000, 83333, 100000, 125000, 250000, 500000, 800000, 1000000});
+    QList<unsigned> bitrates_fd({0, 2000000, 5000000});
 
     QList<unsigned> samplePoints({875});
 

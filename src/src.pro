@@ -38,6 +38,7 @@ include($$PWD/window/LogWindow/LogWindow.pri)
 include($$PWD/window/GraphWindow/GraphWindow.pri)
 include($$PWD/window/CanStatusWindow/CanStatusWindow.pri)
 include($$PWD/window/RawTxWindow/RawTxWindow.pri)
+include($$PWD/window/CanCfgWindow/CanCfgWindow.pri)
 
 
 unix:PKGCONFIG += libnl-3.0

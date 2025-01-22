@@ -1,6 +1,6 @@
 #include "CandleApiTiming.h"
 
-CandleApiTiming::CandleApiTiming(uint32_t baseClk, uint32_t bitrate, uint32_t samplePoint, uint32_t brp, uint32_t phase_seg1, uint32_t phase_seg2)
+CandleApiTiming::CandleApiTiming(uint32_t baseClk, uint32_t bitrate, uint32_t bitrate_fd, uint32_t samplePoint, uint32_t brp, uint32_t phase_seg1, uint32_t phase_seg2)
   : _baseClk(baseClk),
     _bitrate(bitrate),
     _samplePoint(samplePoint)

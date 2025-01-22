@@ -36,6 +36,7 @@
 #include <window/GraphWindow/GraphWindow.h>
 #include <window/CanStatusWindow/CanStatusWindow.h>
 #include <window/RawTxWindow/RawTxWindow.h>
+#include <window/CanCfgWindow/CanCfgWindow.h>
 
 #include <driver/SLCANDriver/SLCANDriver.h>
 #include <driver/CANBlastDriver/CANBlasterDriver.h>
@@ -62,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionGraph_View_2, SIGNAL(triggered()), this, SLOT(addGraphWidget()));
     connect(ui->actionSetup, SIGNAL(triggered()), this, SLOT(showSetupDialog()));
     connect(ui->actionTransmit_View, SIGNAL(triggered()), this, SLOT(addRawTxWidget()));
+    connect(ui->actionCan_Config_View, SIGNAL(triggered()), this, SLOT(addCanCfgWidget()));
 
     connect(ui->actionStart_Measurement, SIGNAL(triggered()), this, SLOT(startMeasurement()));
     connect(ui->actionStop_Measurement, SIGNAL(triggered()), this, SLOT(stopMeasurement()));
@@ -410,6 +412,16 @@ void MainWindow::addStatusWidget(QMainWindow *parent)
     parent->addDockWidget(Qt::BottomDockWidgetArea, dock);
 }
 
+void MainWindow::addCanCfgWidget(QMainWindow *parent)
+{
+    if (!parent) {
+        parent = currentTab();
+    }
+    QDockWidget *dock = new QDockWidget("CAN Config", parent);
+    dock->setWidget(new CanCfgWindow(dock, backend()));
+    parent->addDockWidget(Qt::BottomDockWidgetArea, dock);
+}
+
 void MainWindow::on_actionCan_Status_View_triggered()
 {
     addStatusWidget();
@@ -441,6 +453,7 @@ void MainWindow::showAboutDialog()
        "(c)2015-2017 Hubert Denkmair    \n"
        "(c)2018-2022 Ethan Zonca\n"
        "(c)2024 Colin jiang\n"
+       "(c)2024 Runcheng.lu\n"
     );
 }
 

@@ -47,14 +47,16 @@ bool CandleApiDriver::update()
 
     if (candle_list_scan(&clist)) {
         if (candle_list_length(clist, &num_interfaces)) {
-            for (uint8_t i=0; i<num_interfaces; i++) {
+            for (uint8_t i=0; i < num_interfaces; i++) {
                 if (candle_dev_get(clist, i, &dev)) {
                     CandleApiInterface *cif = findInterface(dev);
 
                     if (cif == NULL) {
-                        //cif = new CandleApiInterface(this, dev);
+                        cif = new CandleApiInterface(this, dev);
+                        cif->set_channel(i);
                         addInterface(cif);
                     } else {
+                        cif->set_channel(i);
                         cif->update(dev);
                     }
 

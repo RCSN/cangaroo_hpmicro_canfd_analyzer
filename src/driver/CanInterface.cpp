@@ -51,11 +51,13 @@ QList<CanTiming> CanInterface::getAvailableBitrates()
     retval << CanTiming(0,   10000, 0, 875) \
            << CanTiming(1,   20000, 0, 875) \
            << CanTiming(2,   50000, 0, 875) \
-           << CanTiming(3,  100000, 0, 875) \
-           << CanTiming(4,  125000, 0, 875) \
-           << CanTiming(5,  250000, 0, 875) \
-           << CanTiming(6,  500000, 0, 875) \
-           << CanTiming(7, 1000000, 0, 875);
+           << CanTiming(3,   83333, 0, 875) \
+           << CanTiming(4,  100000, 0, 875) \
+           << CanTiming(5,  125000, 0, 875) \
+           << CanTiming(6,  250000, 0, 875) \
+           << CanTiming(7,  500000, 0, 875) \
+           << CanTiming(8,  800000, 0, 875) \
+           << CanTiming(9, 1000000, 0, 875);
     return retval;
 }
 
@@ -73,6 +75,16 @@ bool CanInterface::isOpen()
 bool CanInterface::updateStatistics()
 {
     return false;
+}
+
+bool CanInterface::get_enable_terminal_res()
+{
+    return false;
+}
+
+void CanInterface::set_enable_terminal_res(bool enable)
+{
+    (void)enable;
 }
 
 QString CanInterface::getStateText()

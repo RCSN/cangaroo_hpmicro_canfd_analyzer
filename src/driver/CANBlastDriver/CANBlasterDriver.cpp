@@ -134,7 +134,7 @@ CANBlasterInterface *CANBlasterDriver::createOrUpdateInterface(int index, QStrin
 	}
 
 
-//  CANBlasterInterface *scif = new CANBlasterInterface(this, index, name, fd_support);
-//    addInterface(scif);
-//    return scif;
+    CANBlasterInterface *scif = new CANBlasterInterface(this, index, name, fd_support);
+    addInterface(scif);
+    return scif;
 }

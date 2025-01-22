@@ -58,6 +58,8 @@ public:
     QString getDetailsStr() const;
     virtual QString getName() const;
     void setName(QString name);
+    virtual QString getDescription() const;
+    void setDescription(QString description);
 
     virtual QList<CanTiming> getAvailableBitrates();
 
@@ -110,6 +112,9 @@ private:
 
     struct timeval _heartbeat_time;
     QUdpSocket* _socket;
+
+    QString _description;
+
     const char *cname();
 
 };

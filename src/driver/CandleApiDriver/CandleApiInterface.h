@@ -14,12 +14,15 @@ using namespace std;
 
 class CandleApiInterface : public CanInterface
 {
+    Q_OBJECT
 public:
     CandleApiInterface(CandleApiDriver *driver, candle_handle handle);
     virtual ~CandleApiInterface();
 
     virtual QString getName() const;
     virtual QString getDetailsStr() const;
+    virtual QString getDescription() const;
+    void setDescription(QString description);
 
     virtual void applyConfig(const MeasurementInterface &mi);
 
@@ -42,11 +45,16 @@ public:
     virtual int getNumTxFrames();
     virtual int getNumTxErrors();
     virtual int getNumRxOverruns();
-    virtual int getNumTxDropped();
+    virtual int getNumTxDropped();  
+    virtual bool get_enable_terminal_res(void);
+    virtual void set_enable_terminal_res(bool enable);
 
     wstring getPath() const;
 
     void update(candle_handle dev);
+
+    void set_channel(uint8_t ch);
+    uint8_t get_channel(void);
 
 private:
 
@@ -64,7 +72,11 @@ private:
 
     QList<CandleApiTiming> _timings;
 
+    QString _description;
+
     bool setBitTiming(uint32_t bitrate, uint32_t samplePoint);
+
+    uint8_t _channel;
 };
 
 #endif // CANDLEAPIINTERFACE_H
