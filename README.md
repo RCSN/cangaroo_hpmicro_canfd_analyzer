@@ -17,6 +17,9 @@ written by Hubert Denkmair <hubert@denkmair.de>
 further development by Ethan Zonca <e@ethanzonca.com>
 
 
+## Arch Linux
+* Installation via [AUR](https://aur.archlinux.org/packages/cangaroo-hpmicro-canfd-analyzer-git) or [self-built sources](https://github.com/taotieren/aur-repo)
+  * yay -Syu cangaroo-hpmicro-canfd-analyzer
 
 ## Building on Linux
 * to install all required packages in a vanilla ubuntu 16.04:
@@ -24,7 +27,7 @@ further development by Ethan Zonca <e@ethanzonca.com>
 * build with:
   * qmake -qt=qt5
   * make
-  * make install
+  * make install INSTALL_ROOT=/usr
 
 ## Building on Windows
 * Qt Creator (Community Version is okay) brings everything you need
