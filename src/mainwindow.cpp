@@ -27,6 +27,7 @@
 #include <QSignalMapper>
 #include <QCloseEvent>
 #include <QDomDocument>
+#include <QTextCodec>
 
 #include <core/MeasurementSetup.h>
 #include <core/CanTrace.h>
@@ -448,7 +449,7 @@ void MainWindow::showAboutDialog()
        "cangaroo\n"
        ">>open source can bus analyzer                >>\n"
        "\n"
-       "version 0.3.0\n"
+       "version 0.3.1\n"
        "\n"
        "(c)2015-2017 Hubert Denkmair    \n"
        "(c)2018-2022 Ethan Zonca\n"

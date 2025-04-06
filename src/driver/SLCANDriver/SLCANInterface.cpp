@@ -595,7 +595,7 @@ bool SLCANInterface::readMessage(QList<CanMessage> &msglist, unsigned int timeou
        }
     }
     // RX doesn't work on windows unless we call this for some reason
-
+    _serport->waitForReadyRead(1);
     if(_serport->bytesAvailable())
     {
         // This is called when readyRead() is emitted
