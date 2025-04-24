@@ -36,4 +36,5 @@ bool candle_ctrl_set_bittiming(candle_device_t *dev, uint8_t channel, candle_bit
 bool candle_ctrl_get_timestamp(candle_device_t *dev, uint32_t *current_timestamp);
 bool candle_ctrl_get_can_resister_enable_state(candle_device_t *dev, uint8_t channel, uint8_t *enable);
 bool candle_ctrl_set_can_resister_enable_state(candle_device_t *dev, uint8_t channel, uint8_t *enable);
+bool candle_ctrl_get_can_interfacenumber_endpoint(candle_device_t *dev, uint8_t channel);
 

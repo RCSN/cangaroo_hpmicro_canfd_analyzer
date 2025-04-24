@@ -40,6 +40,7 @@ enum {
     CANDLE_BREQ_GET_STATE,
     CANDLE_BREQ_GET_CAN_RESISTER_ENABLE_STATE,
     CANDLE_BREQ_SET_CAN_RESISTER_ENABLE_STATE,
+    GS_USB_BREQ_SET_INTERFACENUMBER_ENDPOINT,
 };
 
 static bool usb_control_msg(WINUSB_INTERFACE_HANDLE hnd, uint8_t request, uint8_t requesttype, uint16_t value, uint16_t index, void *data, uint16_t size)
@@ -136,7 +137,7 @@ bool candle_ctrl_get_capability(candle_device_t *dev, uint8_t channel, candle_ca
         CANDLE_BREQ_BT_CONST,
         USB_DIR_IN|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
         channel,
-        0,
+        dev->interfaceNumber,
         data,
         sizeof(*data)
     );
@@ -152,7 +153,7 @@ bool candle_ctrl_set_bittiming(candle_device_t *dev, uint8_t channel, candle_bit
         CANDLE_BREQ_BITTIMING,
         USB_DIR_OUT|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
         channel,
-        0,
+        dev->interfaceNumber,
         data,
         sizeof(*data)
     );
@@ -184,9 +185,24 @@ bool candle_ctrl_set_can_resister_enable_state(candle_device_t *dev, uint8_t cha
         CANDLE_BREQ_SET_CAN_RESISTER_ENABLE_STATE,
         USB_DIR_OUT|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
         channel,
-        0,
+        dev->interfaceNumber,
         enable,
         1
+    );
+
+    dev->last_error = rc ? CANDLE_ERR_OK : CANDLE_ERR_SET_BITTIMING;
+    return rc;
+}
+bool candle_ctrl_get_can_interfacenumber_endpoint(candle_device_t *dev, uint8_t channel)
+{
+    bool rc = usb_control_msg(
+        dev->winUSBHandle,
+        GS_USB_BREQ_SET_INTERFACENUMBER_ENDPOINT,
+        USB_DIR_OUT|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
+        channel,
+        dev->interfaceNumber,
+        NULL,
+        0
     );
 
     dev->last_error = rc ? CANDLE_ERR_OK : CANDLE_ERR_SET_BITTIMING;

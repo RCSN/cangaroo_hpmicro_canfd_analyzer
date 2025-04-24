@@ -167,6 +167,7 @@ candle_err_t __stdcall DLL candle_dev_last_error(candle_handle hdev);
 
 bool __stdcall DLL candle_channel_get_can_resister_enable_state(candle_handle hdev, uint8_t ch, uint8_t *enable);
 bool __stdcall DLL candle_channel_set_can_resister_enable_state(candle_handle hdev, uint8_t ch, uint8_t *enable);
+bool __stdcall DLL candle_channel_set_interfacenumber_endpoints(candle_handle hdev, uint8_t ch);
 
 #ifdef __cplusplus
 }

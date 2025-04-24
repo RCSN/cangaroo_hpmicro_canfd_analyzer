@@ -272,6 +272,7 @@ void CandleApiInterface::open()
         _deviceTicksStart = t_dev;
     }
 
+    candle_channel_set_interfacenumber_endpoints(_handle, _channel);
     candle_channel_start(_handle, _channel, flags);
     _isOpen = true;
 }
@@ -319,7 +320,6 @@ bool CandleApiInterface::readMessage(QList<CanMessage> &msglist, unsigned int ti
     CanMessage msg;
 
     if (candle_frame_read(_handle, &frame, timeout_ms)) {
-
         if (candle_frame_type(&frame)==CANDLE_FRAMETYPE_RECEIVE) {
             _numRx++;
 

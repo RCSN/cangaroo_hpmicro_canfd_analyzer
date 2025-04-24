@@ -21,7 +21,6 @@
 
 #include "candle.h"
 #include <stdlib.h>
-
 #include "candle_defs.h"
 #include "candle_ctrl_req.h"
 #include "ch_9.h"
@@ -598,4 +597,10 @@ bool __stdcall DLL candle_channel_set_can_resister_enable_state(candle_handle hd
 {
     candle_device_t *dev = (candle_device_t*)hdev;
     return candle_ctrl_set_can_resister_enable_state(dev, ch, enable);
+}
+
+bool __stdcall DLL candle_channel_set_interfacenumber_endpoints(candle_handle hdev, uint8_t ch)
+{
+    candle_device_t *dev = (candle_device_t*)hdev;
+    return candle_ctrl_get_can_interfacenumber_endpoint(dev, ch);
 }
