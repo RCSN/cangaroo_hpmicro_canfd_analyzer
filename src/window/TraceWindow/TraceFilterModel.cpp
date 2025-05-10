@@ -4,7 +4,7 @@ TraceFilterModel::TraceFilterModel(QObject *parent)
     : QSortFilterProxyModel{parent},
     _filterText("")
 {
-   setRecursiveFilteringEnabled(false);
+   //setRecursiveFilteringEnabled(false);
 }
 
 
