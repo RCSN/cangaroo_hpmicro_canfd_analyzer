@@ -162,6 +162,22 @@ bool candle_ctrl_set_bittiming(candle_device_t *dev, uint8_t channel, candle_bit
     return rc;
 }
 
+bool candle_ctrl_set_data_bittiming(candle_device_t *dev, uint8_t channel, candle_bittiming_t *data)
+{
+    bool rc = usb_control_msg(
+        dev->winUSBHandle,
+        CANDLE_BREQ_DATA_BITTIMING,
+        USB_DIR_OUT|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
+        channel,
+        dev->interfaceNumber,
+        data,
+        sizeof(*data)
+    );
+
+    dev->last_error = rc ? CANDLE_ERR_OK : CANDLE_ERR_SET_BITTIMING;
+    return rc;
+}
+
 bool candle_ctrl_get_can_resister_enable_state(candle_device_t *dev, uint8_t channel, uint8_t *enable)
 {
     bool rc = usb_control_msg(
@@ -208,3 +224,20 @@ bool candle_ctrl_get_can_interfacenumber_endpoint(candle_device_t *dev, uint8_t 
     dev->last_error = rc ? CANDLE_ERR_OK : CANDLE_ERR_SET_BITTIMING;
     return rc;
 }
+
+bool candle_ctrl_get_capability_externd(candle_device_t *dev, uint8_t channel, candle_capability_extended_t *data)
+{
+    bool rc = usb_control_msg(
+        dev->winUSBHandle,
+        CANDLE_BREQ_BT_CONST_EXT,
+        USB_DIR_IN|USB_TYPE_VENDOR|USB_RECIP_INTERFACE,
+        channel,
+        dev->interfaceNumber,
+        data,
+        sizeof(*data)
+    );
+
+    dev->last_error = rc ? CANDLE_ERR_OK : CANDLE_ERR_GET_BITTIMING_CONST;
+    return rc;
+}
+

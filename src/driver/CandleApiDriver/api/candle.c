@@ -276,6 +276,23 @@ static bool candle_dev_interal_open(candle_handle hdev)
         dev->last_error = CANDLE_ERR_GET_BITTIMING_CONST;
         goto winusb_free;
     }
+    candle_capability_extended_t cap_externd;
+    if (dev->bt_const.feature & CANDLE_MODE_FD) {
+        if (!candle_ctrl_get_capability_externd(dev, 0, &cap_externd)) {
+            dev->last_error = CANDLE_ERR_GET_DATA_BITTIMING_CONST;
+            goto winusb_free;
+        }
+        dev->data_bt_const.feature = cap_externd.feature;
+        dev->data_bt_const.fclk_can = cap_externd.fclk_can;
+        dev->data_bt_const.brp_inc = cap_externd.brp_inc;
+        dev->data_bt_const.brp_max = cap_externd.brp_max;
+        dev->data_bt_const.brp_min = cap_externd.brp_min;
+        dev->data_bt_const.sjw_max = cap_externd.sjw_max;
+        dev->data_bt_const.tseg1_max = cap_externd.tseg1_max;
+        dev->data_bt_const.tseg1_min = cap_externd.tseg1_min;
+        dev->data_bt_const.tseg2_max = cap_externd.tseg2_max;
+        dev->data_bt_const.tseg2_min = cap_externd.tseg2_min;
+    }
 
     dev->last_error = CANDLE_ERR_OK;
     return true;
@@ -465,6 +482,19 @@ bool __stdcall DLL candle_channel_set_bitrate(candle_handle hdev, uint8_t ch, ui
     return candle_ctrl_set_bittiming(dev, ch, &t);
 }
 
+bool __stdcall DLL candle_channel_set_data_timing(candle_handle hdev, uint8_t ch, candle_bittiming_t *data)
+{
+    candle_device_t *dev = (candle_device_t*)hdev;
+    return candle_ctrl_set_data_bittiming(dev, ch, data);
+}
+
+bool __stdcall DLL candle_channel_get_data_capabilities(candle_handle hdev, uint8_t ch, candle_capability_t *cap)
+{
+    candle_device_t *dev = (candle_device_t*)hdev;
+    memcpy(cap, &dev->data_bt_const.feature, sizeof(candle_capability_t));
+    return true;
+}
+
 bool __stdcall DLL candle_channel_start(candle_handle hdev, uint8_t ch, uint32_t flags)
 {
     // TODO ensure device is open, check channel count..
@@ -483,18 +513,26 @@ bool __stdcall DLL candle_channel_stop(candle_handle hdev, uint8_t ch)
 bool __stdcall DLL candle_frame_send(candle_handle hdev, uint8_t ch, candle_frame_t *frame)
 {
     // TODO ensure device is open, check channel count..
+
     candle_device_t *dev = (candle_device_t*)hdev;
 
     unsigned long bytes_sent = 0;
+    uint32_t size;
 
     frame->echo_id = 0;
     frame->channel = ch;
+
+    if (frame->flags & CANDLE_FLAG_FD) {
+        size = 12 + sizeof(struct canfd);
+    } else {
+        size = 12 + sizeof(struct classic_can);
+    }
 
     bool rc = WinUsb_WritePipe(
         dev->winUSBHandle,
         dev->bulkOutPipe,
         (uint8_t*)frame,
-        sizeof(*frame),
+        size,
         &bytes_sent,
         0
     );
@@ -508,6 +546,7 @@ bool __stdcall DLL candle_frame_read(candle_handle hdev, candle_frame_t *frame, 
 {
     // TODO ensure device is open..
     candle_device_t *dev = (candle_device_t*)hdev;
+    uint8_t  size;
 
     DWORD wait_result = WaitForMultipleObjects(CANDLE_URB_COUNT, dev->rxevents, false, timeout_ms);
     if (wait_result == WAIT_TIMEOUT) {
@@ -529,18 +568,51 @@ bool __stdcall DLL candle_frame_read(candle_handle hdev, candle_frame_t *frame, 
         return false;
     }
 
-    if (bytes_transfered < sizeof(*frame)-4) {
+    if (bytes_transfered < (12 + 8)) {
         candle_prepare_read(dev, urb_num);
         dev->last_error = CANDLE_ERR_READ_SIZE;
         return false;
     }
 
-    if (bytes_transfered < sizeof(*frame)) {
-        frame->timestamp_us = 0;
+    if (bytes_transfered < (12 + 8 + 4)) {
+        frame->classic_can.timestamp_us = 0;
     }
 
     memcpy(frame, dev->rxurbs[urb_num].buf, sizeof(*frame));
 
+    if (frame->can_dlc > 8) {
+        switch (frame->can_dlc) {
+        case 0x09:
+            size = 12;
+            break;
+        case 0x0A:
+            size = 16;
+            break;
+        case 0x0B:
+            size = 20;
+            break;
+        case 0x0C:
+            size = 24;
+            break;
+        case 0x0D:
+            size = 32;
+            break;
+        case 0x0E:
+            size = 48;
+            break;
+        case 0x0F:
+            size = 64;
+            break;
+        default:
+            size = 0;
+            break;
+        }
+    } else {
+        size = frame->can_dlc;
+    }
+    if (bytes_transfered < (12 + size + 4)) {
+        frame->canfd.timestamp_us = 0;
+    }
     return candle_prepare_read(dev, urb_num);
 }
 
@@ -579,12 +651,20 @@ uint8_t __stdcall DLL candle_frame_dlc(candle_frame_t *frame)
 
 uint8_t __stdcall DLL *candle_frame_data(candle_frame_t *frame)
 {
-    return frame->data;
+    if (frame->flags & CANDLE_FLAG_FD) {
+        return frame->canfd.data;
+    } else {
+        return frame->classic_can.data;
+    }
 }
 
 uint32_t __stdcall DLL candle_frame_timestamp_us(candle_frame_t *frame)
 {
-    return frame->timestamp_us;
+    if (frame->flags & CANDLE_FLAG_FD) {
+        return frame->canfd.timestamp_us;
+    } else {
+        return frame->classic_can.timestamp_us;
+    }
 }
 
 bool __stdcall DLL candle_channel_get_can_resister_enable_state(candle_handle hdev, uint8_t ch, uint8_t *enable)

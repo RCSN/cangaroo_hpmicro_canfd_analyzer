@@ -71,10 +71,12 @@ private:
     uint64_t _numTxErr;
 
     QList<CandleApiTiming> _timings;
+    QList<CandleApiTiming> _fd_data_timings;
 
     QString _description;
 
     bool setBitTiming(uint32_t bitrate, uint32_t samplePoint);
+    bool setDataBitTiming(uint32_t fdBitrate, uint32_t samplePoint);
 
     uint8_t _channel;
 };

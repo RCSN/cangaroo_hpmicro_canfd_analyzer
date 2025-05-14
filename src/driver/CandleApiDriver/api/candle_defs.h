@@ -38,6 +38,9 @@
 #define CANDLE_MAX_DEVICES 32
 #define CANDLE_URB_COUNT 30
 
+/* defined rx_buf_size, USB2.0 480Mbps MPS is 512 */
+#define CANDLE_RX_BUF_SIZE 512 
+
 #pragma pack(push,1)
 
 typedef struct {
@@ -63,7 +66,7 @@ typedef struct {
 
 typedef struct {
     OVERLAPPED ovl;
-    uint8_t buf[128];
+    uint8_t buf[CANDLE_RX_BUF_SIZE];
 } canlde_rx_urb;
 
 typedef struct {
@@ -79,6 +82,7 @@ typedef struct {
 
     candle_device_config_t dconf;
     candle_capability_t bt_const;
+    candle_capability_t data_bt_const;
     canlde_rx_urb rxurbs[CANDLE_URB_COUNT];
     HANDLE rxevents[CANDLE_URB_COUNT];
 } candle_device_t;

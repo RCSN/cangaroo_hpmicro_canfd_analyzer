@@ -52,7 +52,7 @@ void GenericCanSetupPage::onShowInterfacePage(SetupDialog &dlg, MeasurementInter
     fillSamplePointsForBitrate(intf, _mi->bitrate(), _mi->samplePoint());
 
     fillFdBitrate(intf, _mi->fdBitrate());//Colin
-    fillSamplePointsForFDBitrate(intf, _mi->samplePoint());//Colin
+    fillSamplePointsForFDBitrate(intf, _mi->fdBitrate(), _mi->fdSamplePoint());//Colin
 
     ui->cbConfigOS->setChecked(!_mi->doConfigure());
     ui->cbListenOnly->setChecked(_mi->isListenOnlyMode());
@@ -81,7 +81,7 @@ void GenericCanSetupPage::updateUI()
         _mi->setSamplePoint(ui->cbSamplePoint->currentData().toUInt());
 
         _mi->setFdBitrate(ui->cbBitrateFD->currentData().toUInt());//Colin
-//        _mi->setFdSamplePoint(ui->cbSamplePointFD->currentData().toUInt());
+        _mi->setFdSamplePoint(ui->cbSamplePointFD->currentData().toUInt());
 
         _enable_ui_updates = false;
 
@@ -105,7 +105,7 @@ void GenericCanSetupPage::fillBitratesList(CanInterface *intf, unsigned selected
 {
     QList<uint32_t> bitrates;
     foreach (CanTiming t, intf->getAvailableBitrates()) {
-        if (!bitrates.contains(t.getBitrate())) {
+        if ((t.getBitrate() != 0) && (!bitrates.contains(t.getBitrate()))) {
             bitrates.append(t.getBitrate());
         }
     }
@@ -122,7 +122,7 @@ void GenericCanSetupPage::fillSamplePointsForBitrate(CanInterface *intf, unsigne
 {
     QList<uint32_t> samplePoints;
     foreach(CanTiming t, intf->getAvailableBitrates()) {
-        if (t.getBitrate() == selectedBitrate) {
+        if ((t.getBitrate() != 0) && (t.getBitrate() == selectedBitrate)) {
             if (!samplePoints.contains(t.getSamplePoint())) {
                 samplePoints.append(t.getSamplePoint());
             }
@@ -138,12 +138,14 @@ void GenericCanSetupPage::fillSamplePointsForBitrate(CanInterface *intf, unsigne
 }
 
 //Colin
-void GenericCanSetupPage::fillSamplePointsForFDBitrate(CanInterface *intf, unsigned selectedSamplePoint)
+void GenericCanSetupPage::fillSamplePointsForFDBitrate(CanInterface *intf, unsigned selectedFDBitrate, unsigned selectedSamplePoint)
 {
     QList<uint32_t> samplePoints;
     foreach(CanTiming t, intf->getAvailableBitrates()) {
-        if (!samplePoints.contains(t.getSamplePoint())) {
-            samplePoints.append(t.getSamplePoint());
+        if ((t.getBitrateFD() != 0) && (t.getBitrateFD() == selectedFDBitrate)) {
+            if (!samplePoints.contains(t.getSamplePoint())) {
+                samplePoints.append(t.getSamplePoint());
+            }
         }
     }
     qSort(samplePoints);
@@ -159,16 +161,8 @@ void GenericCanSetupPage::fillFdBitrate(CanInterface *intf, unsigned selectedBit
 {
     QList<uint32_t> fdBitrates;
 
-//    foreach(CanTiming t, intf->getAvailableBitrates()) {
-//        if (t.getBitrate() == selectedBitrate) {
-//            if (t.isCanFD() && !fdBitrates.contains(t.getBitrateFD())) {
-//                fdBitrates.append(t.getBitrateFD());
-//            }
-//        }
-//    }
-
     foreach (CanTiming t, intf->getAvailableBitrates()) {//Colin
-        if (!fdBitrates.contains(t.getBitrateFD())) {
+        if ((t.getBitrateFD() != 0) && (!fdBitrates.contains(t.getBitrateFD()))) {
             fdBitrates.append(t.getBitrateFD());
         }
     }

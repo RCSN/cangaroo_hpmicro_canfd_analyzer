@@ -33,8 +33,9 @@ bool candle_ctrl_set_device_mode(candle_device_t *dev, uint8_t channel, uint32_t
 bool candle_ctrl_get_config(candle_device_t *dev, candle_device_config_t *dconf);
 bool candle_ctrl_get_capability(candle_device_t *dev, uint8_t channel, candle_capability_t *data);
 bool candle_ctrl_set_bittiming(candle_device_t *dev, uint8_t channel, candle_bittiming_t *data);
+bool candle_ctrl_set_data_bittiming(candle_device_t *dev, uint8_t channel, candle_bittiming_t *data);
 bool candle_ctrl_get_timestamp(candle_device_t *dev, uint32_t *current_timestamp);
 bool candle_ctrl_get_can_resister_enable_state(candle_device_t *dev, uint8_t channel, uint8_t *enable);
 bool candle_ctrl_set_can_resister_enable_state(candle_device_t *dev, uint8_t channel, uint8_t *enable);
 bool candle_ctrl_get_can_interfacenumber_endpoint(candle_device_t *dev, uint8_t channel);
-
+bool candle_ctrl_get_capability_externd(candle_device_t *dev, uint8_t channel, candle_capability_extended_t *data);

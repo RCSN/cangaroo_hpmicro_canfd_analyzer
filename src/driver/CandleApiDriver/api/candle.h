@@ -49,6 +49,13 @@ enum {
     CANDLE_ID_ERR      = 0x20000000
 };
 
+enum {
+    CANDLE_FLAG_OVERFLOW = (1<<0),
+    CANDLE_FLAG_FD       = (1<<1),  /* is a CAN-FD frame */
+    CANDLE_FLAG_BRS      = (1<<2),  /* bit rate switch (for CAN-FD frames) */
+    CANDLE_FLAG_ESI      = (1<<3)   /* error state indicator (for CAN-FD frames) */
+};
+
 typedef enum {
     CANDLE_MODE_NORMAL        = 0x00,
     CANDLE_MODE_LISTEN_ONLY   = 0x01,
@@ -92,10 +99,29 @@ typedef enum {
     CANDLE_ERR_SET_TIMESTAMP_MODE  = 26,
     CANDLE_ERR_DEV_OUT_OF_RANGE    = 27,
 	CANDLE_ERR_GET_TIMESTAMP       = 28,
-    CANDLE_ERR_SET_PIPE_RAW_IO     = 29
+    CANDLE_ERR_SET_PIPE_RAW_IO     = 29,
+    CANDLE_ERR_GET_DATA_BITTIMING_CONST = 30,
 } candle_err_t;
 
+#define DECLARE_FLEX_ARRAY(_t, _n) \
+        struct { \
+            struct { } __dummy_ ## _n; \
+            _t _n[0]; \
+        }
+
 #pragma pack(push,1)
+
+typedef struct classic_can {
+    uint8_t data[8];
+    uint32_t timestamp_us;
+    uint8_t dummy[56];
+} classic_can_t;
+
+typedef struct canfd {
+    uint8_t data[64];
+    uint32_t timestamp_us;
+}canfd_t;
+
 
 typedef struct {
     uint32_t echo_id;
@@ -104,8 +130,10 @@ typedef struct {
     uint8_t channel;
     uint8_t flags;
     uint8_t reserved;
-    uint8_t data[8];
-    uint32_t timestamp_us;
+    union {
+        classic_can_t classic_can;
+        canfd_t canfd;
+    };
 } candle_frame_t;
 
 typedef struct {
@@ -120,6 +148,28 @@ typedef struct {
     uint32_t brp_max;
     uint32_t brp_inc;
 } candle_capability_t;
+
+typedef struct {
+    uint32_t feature;
+    uint32_t fclk_can;
+    uint32_t tseg1_min;
+    uint32_t tseg1_max;
+    uint32_t tseg2_min;
+    uint32_t tseg2_max;
+    uint32_t sjw_max;
+    uint32_t brp_min;
+    uint32_t brp_max;
+    uint32_t brp_inc;
+    uint32_t dttseg1_min;
+    uint32_t dttseg1_max;
+    uint32_t dttseg2_min;
+    uint32_t dttseg2_max;
+    uint32_t dtsjw_max;
+    uint32_t dtbrp_min;
+    uint32_t dtbrp_max;
+    uint32_t dtbrp_inc;
+} candle_capability_extended_t;
+
 
 typedef struct {
     uint32_t prop_seg;
@@ -149,6 +199,8 @@ bool __stdcall DLL candle_channel_count(candle_handle hdev, uint8_t *num_channel
 bool __stdcall DLL candle_channel_get_capabilities(candle_handle hdev, uint8_t ch, candle_capability_t *cap);
 bool __stdcall DLL candle_channel_set_timing(candle_handle hdev, uint8_t ch, candle_bittiming_t *data);
 bool __stdcall DLL candle_channel_set_bitrate(candle_handle hdev, uint8_t ch, uint32_t bitrate);
+bool __stdcall DLL candle_channel_set_data_timing(candle_handle hdev, uint8_t ch, candle_bittiming_t *data);
+bool __stdcall DLL candle_channel_get_data_capabilities(candle_handle hdev, uint8_t ch, candle_capability_t *cap);
 bool __stdcall DLL candle_channel_start(candle_handle hdev, uint8_t ch, uint32_t flags);
 bool __stdcall DLL candle_channel_stop(candle_handle hdev, uint8_t ch);
 
