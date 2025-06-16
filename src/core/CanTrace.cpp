@@ -30,6 +30,8 @@
 #include <core/CanDbSignal.h>
 #include <driver/CanInterface.h>
 
+#include <QDebug>
+
 CanTrace::CanTrace(Backend &backend, QObject *parent, int flushInterval)
   : QObject(parent),
     _backend(backend),
@@ -73,6 +75,12 @@ const CanMessage *CanTrace::getMessage(int idx)
 void CanTrace::enqueueMessage(const CanMessage &msg, bool more_to_follow)
 {
     QMutexLocker locker(&_mutex);
+
+    if (_disp_ch != CanTrace::All) {
+        if (_disp_ch != (msg.getInterfaceId() + 1)) {
+            return;
+        }
+    }
 
     int idx = size() + _newRows;
     if (idx>=_data.size()) {
@@ -212,4 +220,14 @@ bool CanTrace::getMuxedSignalFromCache(const CanDbSignal *signal, uint64_t *raw_
     } else {
         return false;
     }
+}
+
+void CanTrace::setDisplayChannel(int ch)
+{
+    _disp_ch = (CanTrace::Display_channel)ch;
+}
+
+CanTrace::Display_channel CanTrace::getDisplayChannel()
+{
+    return _disp_ch;
 }

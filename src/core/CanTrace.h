@@ -39,7 +39,17 @@ class Backend;
 class CanTrace : public QObject
 {
     Q_OBJECT
-
+    enum Display_channel {
+        All,
+        CH0,
+        CH1,
+        CH2,
+        CH3,
+        CH4,
+        CH5,
+        CH6,
+        CH7,
+    };
 public:
     explicit CanTrace(Backend &backend, QObject *parent, int flushInterval);
 
@@ -52,6 +62,9 @@ public:
     void saveVectorAsc(QFile &file);
 
     bool getMuxedSignalFromCache(const CanDbSignal *signal, uint64_t *raw_value);
+
+    void setDisplayChannel(int ch);
+    Display_channel getDisplayChannel(void);
 
 signals:
     void messageEnqueued(int idx);
@@ -80,6 +93,8 @@ private:
     QMutex _mutex;
     QMutex _timerMutex;
     QTimer _flushTimer;
+
+    Display_channel _disp_ch;
 
     void startTimer();
 
