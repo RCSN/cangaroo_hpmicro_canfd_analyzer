@@ -414,7 +414,10 @@ void CandleApiInterface::sendMessage(const CanMessage &msg)
 {
     candle_frame_t frame;
     uint8_t msg_len;
-
+    CanMessage msgCopy = msg;
+    msgCopy.setInterfaceId(getId());
+    msgCopy.setDirection(CanMessage::Tx);
+    memset(&frame, 0, sizeof (candle_frame_t));
     frame.can_id = msg.getId();
     if (msg.isExtended()) {
         frame.can_id |= CANDLE_ID_EXTENDED;
@@ -474,6 +477,10 @@ void CandleApiInterface::sendMessage(const CanMessage &msg)
 
     if (candle_frame_send(_handle, _channel, &frame)) {
         _numTx++;
+        struct timeval tv;
+        gettimeofday(&tv, nullptr); // 获取当前时间
+        msgCopy.setTimestamp(tv);
+        _backend.addSentMessage(msgCopy);
     } else {
         _numTxErr++;
         qDebug() << "sendMessage error";
@@ -489,7 +496,7 @@ bool CandleApiInterface::readMessage(QList<CanMessage> &msglist, unsigned int ti
     if (candle_frame_read(_handle, &frame, timeout_ms)) {
         if (candle_frame_type(&frame)==CANDLE_FRAMETYPE_RECEIVE) {
             _numRx++;
-
+            msg.setDirection(CanMessage::Rx);
             msg.setInterfaceId(getId());
             msg.setErrorFrame(false);
             msg.setId(candle_frame_id(&frame));
@@ -548,7 +555,9 @@ bool CandleApiInterface::readMessage(QList<CanMessage> &msglist, unsigned int ti
 
                 msg.setTimestamp(ts_us/1000000, ts_us % 1000000);
             } else {
-                msg.setTimestamp(0, 0);
+                struct timeval tv;
+                gettimeofday(&tv, nullptr); // 获取当前时间
+                msg.setTimestamp(tv);
             }
 
             msglist.append(msg);

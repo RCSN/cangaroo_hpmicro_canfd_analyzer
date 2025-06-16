@@ -389,6 +389,9 @@ void MainWindow::addRawTxWidget(QMainWindow *parent)
     QDockWidget *dock = new QDockWidget("Transmit View", parent);
     dock->setWidget(new RawTxWindow(dock, backend()));
     parent->addDockWidget(Qt::BottomDockWidgetArea, dock);
+    if(backend().getInterfaceList().size() > 0) {
+        emit backend().beginMeasurement();
+    }
 }
 
 

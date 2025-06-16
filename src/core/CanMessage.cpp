@@ -66,6 +66,7 @@ void CanMessage::cloneFrom(const CanMessage &msg)
     _isBRS = msg.isBRS();
     _isExd = msg.isExtended();
     _isRTR = msg.isRTR();
+    this->_direction = msg._direction;
     // Copy data
     for(int i=0; i<64; i++)
     {
@@ -336,3 +337,15 @@ QString CanMessage::getDataHexString() const
 
     return outstr;
 }
+
+void CanMessage::setDirection(Direction dir)
+{
+    _direction = dir;
+}
+
+CanMessage::Direction CanMessage::direction() const
+{
+    return _direction;
+}
+
+

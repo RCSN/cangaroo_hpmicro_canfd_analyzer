@@ -30,6 +30,10 @@
 
 class CanMessage {
 public:
+    enum Direction {
+        Rx,
+        Tx
+    };
 	CanMessage();
 	CanMessage(uint32_t can_id);
     CanMessage(const CanMessage &msg);
@@ -87,6 +91,9 @@ public:
     QString getIdString() const;
     QString getDataHexString() const;
 
+    void setDirection(Direction dir);
+    Direction direction() const;
+
 private:
     union {
         uint8_t _u8[8*8];
@@ -102,5 +109,6 @@ private:
     bool _isExd;
     bool _isRTR;
     CanInterfaceId _interface;
+    Direction _direction;
 
 };

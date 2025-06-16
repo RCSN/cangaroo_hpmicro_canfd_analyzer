@@ -69,6 +69,10 @@ private slots:
     void on_btTraceClear_triggered(void);
 
 
+    void on_cbShowSend_clicked(bool checked);
+
+    void on_cbDispChannel_currentIndexChanged(int index);
+
 private:
     Ui::TraceWindow *ui;
     Backend *_backend;

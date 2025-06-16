@@ -81,10 +81,60 @@
        </widget>
       </item>
       <item>
+       <widget class="Line" name="line_5">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="cbShowSend">
+        <property name="text">
+         <string>Show Send</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="Line" name="line_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>channel:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="cbDispChannel">
+        <item>
+         <property name="text">
+          <string>all</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ch0</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ch1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ch2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ch3</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>

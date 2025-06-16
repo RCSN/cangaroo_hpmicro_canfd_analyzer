@@ -89,6 +89,11 @@ public:
     void clearLog();
     LogModel &getLogModel() const;
 
+    void addSentMessage(const CanMessage &msg);
+
+    void set_show_send(bool sta);
+    bool get_show_send(void);
+
 signals:
     void beginMeasurement();
     void endMeasurement();
@@ -113,4 +118,6 @@ private:
     QList<CanListener*> _listeners;
 
     LogModel *_logModel;
+
+    bool is_show_send = false;
 };

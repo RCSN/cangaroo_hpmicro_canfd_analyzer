@@ -312,3 +312,20 @@ void Backend::logMessage(const QDateTime dt, const log_level_t level, const QStr
 {
     emit onLogMessage(dt, level, msg);
 }
+
+void Backend::addSentMessage(const CanMessage &msg)
+{
+    if (is_show_send == true) {
+        _trace->enqueueMessage(msg);
+    }
+}
+
+void Backend::set_show_send(bool sta)
+{
+    is_show_send = sta;
+}
+
+bool Backend::get_show_send()
+{
+    return is_show_send;
+}

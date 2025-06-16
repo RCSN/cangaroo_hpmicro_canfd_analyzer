@@ -34,7 +34,9 @@
 #include <window/TraceWindow/TraceWindow.h>
 #include <window/SetupDialog/SetupDialog.h>
 #include <window/LogWindow/LogWindow.h>
+#include <window/TraceWindow/AutoHeightDelegate.h>
 
+#include <QDebug>
 
 TraceWindow::TraceWindow(QWidget *parent, Backend &backend) :
     ConfigurableWidget(parent),
@@ -42,6 +44,8 @@ TraceWindow::TraceWindow(QWidget *parent, Backend &backend) :
     _backend(&backend)
 {
     ui->setupUi(this);
+    // 添加自定义委托
+    ui->tree->setItemDelegate(new AutoHeightDelegate(this));
 
     _linearTraceViewModel = new LinearTraceViewModel(backend);
     _linearProxyModel = new QSortFilterProxyModel(this);
@@ -65,10 +69,12 @@ TraceWindow::TraceWindow(QWidget *parent, Backend &backend) :
     QFont font("consolas");
     //QFont font("Monospace");//Colin
     font.setStyleHint(QFont::TypeWriter);
+    ui->tree->setWordWrap(true);
+    ui->tree->setTextElideMode(Qt::ElideNone);
+    ui->tree->setUniformRowHeights(false);  // 允许动态行高
     ui->tree->setFont(font);
     ui->tree->setAlternatingRowColors(true);
 
-    ui->tree->setUniformRowHeights(true);
     ui->tree->setColumnWidth(0, 110);//Timestamp
     ui->tree->setColumnWidth(1, 120);//Port
     ui->tree->setColumnWidth(2, 70);//Rx/Tx
@@ -93,7 +99,7 @@ TraceWindow::TraceWindow(QWidget *parent, Backend &backend) :
     ui->cbAggregateMode->addItem("*Port", 1);
 
 
-    setTimestampMode(timestamp_mode_delta);
+    setTimestampMode(timestamp_mode_relative);
 
     connect(_linearTraceViewModel, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(rowsInserted(QModelIndex,int,int)));
 
@@ -241,4 +247,15 @@ void TraceWindow::on_btTraceClear_triggered()
 {
     _backend->clearTrace();//Colin
     log_info(">>Clear Trace<<");
+}
+
+
+void TraceWindow::on_cbShowSend_clicked(bool checked)
+{
+    _backend->set_show_send(checked);
+}
+
+void TraceWindow::on_cbDispChannel_currentIndexChanged(int index)
+{
+    _backend->getTrace()->setDisplayChannel(index);
 }

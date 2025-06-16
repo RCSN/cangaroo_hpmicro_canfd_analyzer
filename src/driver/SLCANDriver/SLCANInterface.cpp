@@ -439,7 +439,9 @@ void SLCANInterface::sendMessage(const CanMessage &msg) {
     char buf[SLCAN_MTU+1] = {0};
 
     uint8_t msg_idx = 0;
-
+    CanMessage msgCopy = msg;
+    msgCopy.setInterfaceId(getId());
+    msgCopy.setDirection(CanMessage::Tx);
     // Message is FD
     // Add character for frame type
     if(msg.isFD())
@@ -554,7 +556,10 @@ void SLCANInterface::sendMessage(const CanMessage &msg) {
     buf[msg_idx] = '\0';
 
     _msg_queue.append(QString(buf));
-
+    struct timeval tv;
+    gettimeofday(&tv, nullptr); // 获取当前时间
+    msgCopy.setTimestamp(tv);
+    Backend::instance().addSentMessage(msgCopy);
 }
 
 bool SLCANInterface::readMessage(QList<CanMessage> &msglist, unsigned int timeout_ms)
@@ -638,6 +643,10 @@ bool SLCANInterface::readMessage(QList<CanMessage> &msglist, unsigned int timeou
             {
                 CanMessage msg;
                 ret = parseMessage(msg);
+                struct timeval tv;
+                gettimeofday(&tv, nullptr); // 获取当前时间
+                msg.setTimestamp(tv);
+                msg.setDirection(CanMessage::Rx);
                 msglist.append(msg);
                 msglist.replace(count, msg);
                 count++;

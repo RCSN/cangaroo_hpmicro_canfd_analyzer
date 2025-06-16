@@ -14,6 +14,7 @@ HEADERS  += \
     $$PWD/TraceFilterModel.h \
     $$PWD/TraceWindow.h \
     $$PWD/TraceViewTypes.h \
+    $$PWD/AutoHeightDelegate.h
 
 FORMS    += \
     $$PWD/TraceWindow.ui

@@ -21,12 +21,13 @@
 
 #include "mainwindow.h"
 #include <QApplication>
+Q_DECLARE_METATYPE(log_level_t)
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
-
+    qRegisterMetaType<log_level_t>("log_level_t");
     w.show();
 
     return a.exec();
