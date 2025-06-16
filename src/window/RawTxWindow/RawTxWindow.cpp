@@ -24,6 +24,7 @@
 
 #include <QDomDocument>
 #include <QTimer>
+#include <QDebug>
 #include <core/Backend.h>
 #include <driver/CanInterface.h>
 
@@ -56,6 +57,8 @@ RawTxWindow::RawTxWindow(QWidget *parent, Backend &backend) :
     // Disable TX until interfaces are present
     this->setDisabled(1);
 
+    lineedit_id_address = ui->fieldAddress->text().toUpper().toUInt(nullptr, 16);
+    lineedit_id_address_inc = lineedit_id_address;
 }
 
 
@@ -361,10 +364,12 @@ void RawTxWindow::sendRepeatMessage(bool enable)
     if(enable)
     {
         repeatmsg_timer->start(ui->spinBox_RepeatRate->value());
+        ui->repeatSendButton->setText("Stop Send Repeat");
     }
     else
     {
         repeatmsg_timer->stop();
+        ui->repeatSendButton->setText("Start Send Repeat");
     }
 }
 
@@ -416,7 +421,6 @@ void RawTxWindow::refreshInterfaces()
 void RawTxWindow::sendRawMessage()
 {
     CanMessage msg;
-
     bool en_extended = ui->checkBox_IsExtended->isChecked();
     bool en_rtr = ui->checkBox_IsRTR->isChecked();
 
@@ -495,23 +499,6 @@ void RawTxWindow::sendRawMessage()
     data_int[data_ctr++] = ui->fieldByte6_7->text().toUpper().toInt(NULL, 16);
     data_int[data_ctr++] = ui->fieldByte7_7->text().toUpper().toInt(NULL, 16);
 
-
-    uint32_t address = ui->fieldAddress->text().toUpper().toUInt(NULL, 16);
-
-    // If address is beyond std address namespace, force extended
-    if(address > 0x7ff)
-    {
-        en_extended = true;
-        ui->checkBox_IsExtended->setChecked(true);
-    }
-
-    // If address is larger than max for extended, clip
-    if(address >= 0x1FFFFFFF)
-    {
-        address = address & 0x1FFFFFFF;
-        ui->fieldAddress->setText(QString::number( address, 16 ).toUpper());
-    }
-
     uint8_t dlc =ui->comboBoxDLC->currentData().toUInt();
 
     // If DLC > 8, must be FD
@@ -526,7 +513,7 @@ void RawTxWindow::sendRawMessage()
         msg.setDataAt(i, data_int[i]);
     }
 
-    msg.setId(address);
+    msg.setId(lineedit_id_address_inc);
     msg.setLength(dlc);
 
     msg.setExtended(en_extended);
@@ -541,13 +528,26 @@ void RawTxWindow::sendRawMessage()
     CanInterface *intf = _backend.getInterfaceById((CanInterfaceId)ui->comboBoxInterface->currentData().toUInt());
     intf->sendMessage(msg);
 
+    if (ui->checkBox_IDIncrement->isChecked()) {
+        lineedit_id_address_inc++;
+    }
+    if (en_extended == true) {
+        if (lineedit_id_address_inc > 0x1FFFFFFF) {
+            lineedit_id_address_inc = lineedit_id_address;
+        }
+    } else {
+        if (lineedit_id_address_inc > 0x7ff) {
+            lineedit_id_address_inc = lineedit_id_address;
+        }
+    }
 
-    char outmsg[256];
-    snprintf(outmsg, 256, "Send [%s] to %d on port %s [ext=%u rtr=%u err=%u fd=%u brs=%u]",
-             msg.getDataHexString().toLocal8Bit().constData(), msg.getId(), intf->getName().toLocal8Bit().constData(),
-             msg.isExtended(), msg.isRTR(), msg.isErrorFrame(), msg.isFD(), msg.isBRS());
-    log_info(outmsg);
-
+    if (Backend::instance().get_show_send() == false) {
+        char outmsg[256];
+        snprintf(outmsg, 256, "Send [%s] to %d on port %s [ext=%u rtr=%u err=%u fd=%u brs=%u]",
+                 msg.getDataHexString().toLocal8Bit().constData(), msg.getId(), intf->getName().toLocal8Bit().constData(),
+                 msg.isExtended(), msg.isRTR(), msg.isErrorFrame(), msg.isFD(), msg.isBRS());
+        log_info(outmsg);
+    }
 }
 
 bool RawTxWindow::saveXML(Backend &backend, QDomDocument &xml, QDomElement &root)
@@ -731,5 +731,24 @@ void RawTxWindow::showFDFields()
     ui->fieldByte5_7->show();
     ui->fieldByte6_7->show();
     ui->fieldByte7_7->show();
+}
+
+
+void RawTxWindow::on_fieldAddress_editingFinished()
+{
+    qDebug() << "on_fieldAddress_editingFinished";
+    lineedit_id_address = ui->fieldAddress->text().toUpper().toUInt(nullptr, 16);
+    if(lineedit_id_address > 0x7ff)
+    {
+        ui->checkBox_IsExtended->setChecked(true);
+    }
+
+    // If address is larger than max for extended, clip
+    if(lineedit_id_address >= 0x1FFFFFFF)
+    {
+        lineedit_id_address = lineedit_id_address & 0x1FFFFFFF;
+        ui->fieldAddress->setText(QString::number( lineedit_id_address, 16 ).toUpper());
+    }
+    lineedit_id_address_inc = lineedit_id_address;
 }
 

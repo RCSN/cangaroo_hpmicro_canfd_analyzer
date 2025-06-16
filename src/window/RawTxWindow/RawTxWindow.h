@@ -53,10 +53,14 @@ private slots:
     void sendRawMessage();
 
 
+    void on_fieldAddress_editingFinished();
+
 private:
     Ui::RawTxWindow *ui;
     Backend &_backend;
     QTimer *repeatmsg_timer;
+    uint32_t lineedit_id_address;
+    uint32_t lineedit_id_address_inc;
     void hideFDFields();
     void showFDFields();
 
