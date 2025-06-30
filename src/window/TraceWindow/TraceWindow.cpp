@@ -98,6 +98,7 @@ TraceWindow::TraceWindow(QWidget *parent, Backend &backend) :
     ui->cbAggregateMode->addItem("ID", 0);//Colin
     ui->cbAggregateMode->addItem("*Port", 1);
 
+    _backend->getTrace()->setDisplayChannel(ui->cbDispChannel->currentIndex());
 
     setTimestampMode(timestamp_mode_relative);
 
